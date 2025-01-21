@@ -1,0 +1,72 @@
+﻿Implement the concept of static routing
+
+
+
+
+Here is the Topology on which we did the experiment
+  
+
+
+
+Scenario
+Suppose that your company has 2 branches located in Tehran and Shiraz.
+As the administrator of the network, you are tasked to connect them so that employees in the two LANs can communicate with each other.
+After careful consideration you decided to connect them via static route.
+Step1. Configuring interfaces on R1
+R1(Config)#int fa0/0
+R1(Config-if)#ip address 192.168.2.1 255.255.255.0 R1(Config-if)#no shutdown
+R1(Config-if)#ex
+R1(Config)#int s0/0
+R1(Config-if)#ip address 10.0.0.1 255.255.255.0 R1(Config-if)#no shut
+R1(Config-if)#clock rate 64000 R1(Config-if)#ex
+
+
+  
+
+  
+
+Step2.Configure interfaces on R2
+R1(Config)#int s0/0
+R1(Config-if)#ip address 10.0.0.2 255.255.255.252 R1(Config-if)#no shut
+R1(Config-if)#clock rate R1(Config-if)#ex
+R1(Config)#int fa0/0
+R1(Config-if)#ip address 12.168.3.1 255.255.255.0 R1(Config-if)#no shut
+R1(Config-if)#ex
+  
+
+Step3. show ip route command R1(Config)#do s hip route
+
+
+  
+
+R2(Config)#do s hip route
+  
+
+Step4. Configuring static route on R1
+R1(Config-if)#ip route 192.168.3.0 255.255.255.0 10.0.0.2
+R1(Config-if)#do s hip route
+  
+  
+
+
+
+Step5. Configuring static route on R2
+R2(Config)#ip route 192.168.2.0 255.255.255.0 10.0.0.1
+R2(Config)#do sh ip route
+  
+
+
+
+  
+
+Step6. Manually set an IP on PC1
+PC>1 ip 192.168.2.3/24 192.168.2.1
+  
+
+Step7. Manually set an IP on PC2
+PC>2 ip 192.168.3.3/24 192.168.3.1
+  
+
+Step8. Try to ping each far end network
+PC1>ping 192.168.3.3
+PC2>ping 192.16832.3

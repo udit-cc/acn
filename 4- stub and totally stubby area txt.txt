@@ -1,0 +1,100 @@
+﻿Create the physical topology in GNS3 as shown in the image below :
+
+
+  
+
+
+
+
+
+
+
+
+
+Step 2: Configure the IPv4 address on the physical interface on the routers :
+On R1 :
+
+
+  
+
+R1(config)#interface FastEthernet0/0
+R1(config-if)#ip address 10.1.1.1 255.255.255.0 On R2 :
+  
+
+R2(config)#interface FastEthernet0/0
+R2(config-if)#ip address 10.1.1.2 255.255.255.0
+  
+
+R2(config-if)#interface FastEthernet1/0
+R2(config-if)#ip address 20.1.1.1 255.255.255.0 On R3 :
+  
+
+R3(config)#interface FastEthernet1/0
+R3(config-if)#ip address 20.1.1.2 255.255.255.0
+Step 3: Configure a loopback interface on R1 with an IPv4 address :
+R1(config)#interface Loopback0
+R1(config-if)#ip address 1.1.1.1 255.255.255.255
+  
+
+Step 4: Configuring the OSPF process on all three routers with the command router OSPF <process-id>
+:
+
+
+  
+
+  
+
+R1(config)#router ospf 1 R1(config-router)#exit
+  
+
+R2(config)#router ospf 1 R2(config-router)#exit
+  
+
+R3(config)#router ospf 1 R3(config-router)#exit
+Step 5: Enabling OSPF on the interfaces with the interface level sub-command IP OSPF <process-id> area <area-id> :
+  
+
+R1(config)#interface FastEthernet0/0 R1(config-if)#ip ospf 1 area 0
+R1(config)#interface Loopback0 R1(config-if)#ip ospf 1 area 0
+  
+
+R2(config)#interface FastEthernet0/0 R2(config-if)#ip ospf 1 area 0
+R2(config-if)#interface FastEthernet1/0 R2(config-if)#ip ospf 1 area 1
+
+
+  
+
+R3(config)#interface FastEthernet1/0 R3(config-if)#ip ospf 1 area 1
+Step 6: Configuring area 2 as a stub area with the router sub-command area <area-id> stub
+  
+
+R2(config)#router ospf 1
+R2(config-router)#area 1 stub R2(config-router)#exit
+  
+
+  
+
+R3(config)#router ospf 1
+R3(config-router)#area 1 stub R3(config-router)#exit
+Step 7: Verifying OSPF configuration on the routers :
+R1#show ip protocol
+  
+
+R2#show ip protocol
+
+
+  
+
+R3#show ip protocol
+  
+
+Step 8: Checking the IPv4 routing table on the routers and seeing OSPF route entry :
+R1#show ip route
+  
+
+R2#show ip route
+
+
+  
+
+R3#show ip route

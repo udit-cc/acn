@@ -1,0 +1,275 @@
+﻿The Topology that we are going to see is shown below: : R1#configure terminal
+
+
+R1(config)#interface fastEthernet 0/0
+R1(config-if)#ip address 192.168.12.1 255.255.255.0
+R1(config-if)#no shutdown 
+R1(configif)#exit
+R1(config)#interface fastEthernet 0/1
+R1(config-if)#ip address 192.168.13.1 255.255.255.0
+R1(config-if)#no shutdown
+R1(config-if)#exi
+R1(config)#interface loopback 0
+R1(config-if)#ip address 1.1.1.1 255.255.255.255
+R1(config-if)#endR1# 
+
+
+R2(config)#int
+R2(config)#interface fastEthernet 0/0
+R2(config-if)#ip address 192.168.12.2 255.255.255.0
+R2(config-if)#no shutdown
+R2(config-if)#
+R2(configif)#exit
+R2(config)#interface fastEthernet 0/1
+R2(config-if)#ip address 192.168.24.2 255.255.255.0
+R2(config-if)#no shutdown
+R2(config-if)#exi
+R2(config)#interface loopback 0
+R2(config-if)#ip address 2.2.2.2 255.255.255.255
+R2(config-if)#end
+R2# 
+
+
+ R3(config)#interface fastEthernet 0/0
+R3(config-if)#ip address 192.168.13.3 255.255.255.0
+R3(config-if)#no shutdown
+R3(config-if)#exit
+R3(config)#interface fastEthernet 0/1
+R3(config-if)#ip addre
+R3(config-if)#ip address 192.168.35.3 255.255.255.0
+R3(config-if)#no shutdown
+R3(config-if)#
+R3(configif)#exi
+R3(config)#
+R3(config)#interface loopback 0
+R3(config-if)#ip address 3.3.3.3 255.255.255.255
+R3(config-if)#
+R3(config-if)#end
+R3#
+
+
+ R4#configure terminal
+R4(config)#interface fastEthernet 0/0
+R4(config-if)#ip addre
+R4(config-if)#ip address 192.168.24.4 255.255.255.0
+R4(config-if)#no shutdown
+R4(config-if)#exi
+R4(config)#interface fastEthernet 0/1
+R4(config-if)#ip address 192.168.45.4 255.255.255.0
+R4(config-if)#no shutdown
+R4(configif)#exi
+R4(config)#interface loopback 0
+R4(config-if)#ip address 4.4.4.4 255.255.255.255
+R4(config-if)#exit
+R4(config)# 
+
+
+R5#configure terminal
+R5(config)#interface fastEthernet 0/0
+R5(config-if)#ip address 192.168.35.5 255.255.255.0
+R5(config-if)#no shutdown
+R5(configif)#exit
+R5(config)#int fastEthernet 0/1
+R5(config-if)#ip address 192.168.45.5 255.255.255.0
+R5(config-if)#no shutdown
+R5(config-if)#exit
+R5(config)#interface loopback 0
+R5(config-if)#ip address 5.5.5.5 255.255.255.255
+R5(configif)#exit
+R5(config)#interface loopback 1
+R5(config-if)#ip address 55.55.55.55 255.255.255.255
+R5(config-if)#end 
+R5# 
+
+
+R1#configure terminal
+Enter configuration commands, one per line. End with CNTL/Z.
+
+
+R1(config)#R1(config)#router bgp 1
+R1(config-router)#neighbor 3.3.3.3 remote-as 3
+R1(config-router)#neighbor 3.3.3.3 update-source loopback 0
+R1(configrouter)#neighbor 3.3.3.3 ebgp-multihop 2R1(config-router)#
+R1(configrouter)#neighbor 2.2.2.2 remote-as 1
+R1(config-router)#neighbor 2.2.2.2 updatesource loopback 0
+R1(config-router)#neighbor 2.2.2.2 next-hop-self R1(configrouter)#
+R1(config-router)#end
+R1# 
+
+
+R2#configure terminalEnter configuration commands, one per line. End with CNTL/Z.
+R2(config)#
+R2(config)#router bgp 1
+R2(config-router)#
+R2(configrouter)#neighbor 1.1.1.1 remote-as 1
+R2(config-router)#neighbor 1.1.1.1 updatesource loopback 0
+R2(config-router)#neighbor 1.1.1.1 next-hop-self 
+R2(configrouter)#neighbor 4.4.4.4 remote-as 4
+R2(config-router)#neighbor 4.4.4.4 updatesource loopback 0
+R2(config-router)#neighbor 4.4.4.4 ebgp-multihop 2
+R2(configrouter)#end
+R2# 
+
+
+R3#configure terminal
+Enter configuration commands, one per line. End with CNTL/Z.
+
+
+R3(config)#router bgp 3
+R3(config-router)#
+R3(config-router)#neighbor 1.1.1.1 remote-as 1
+R3(config-router)#neighbor 1.1.1.1 update-source loopback 0
+R3(configrouter)#neighbor 1.1.1.1 ebgp-multihop 2R3(config-router)#
+R3(configrouter)#neighbor 5.5.5.5 remote-as 5
+R3(config-router)#neighbor 5.5.5.5 updatesource loopback 0
+R3(config-router)#neighbor 5.5.5.5 ebgp-multihop 2
+R3(configrouter)#end
+R3# 
+
+
+R4#configure terminal
+Enter configuration commands, one per line. End with CNTL/Z.
+R4(config)#router bgp 4
+R4(config-router)#
+R4(config-router)#neighbor 2.2.2.2 remote-as 1
+R4(config-router)#neighbor 2.2.2.2 update-source loopback 0
+R4(configrouter)#neighbor 2.2.2.2 ebgp-multihop 2R4(config-router)#
+R4(configrouter)#neighbor 5.5.5.5 remote-as 5
+R4(config-router)#neighbor 5.5.5.5 updatesource loopback 0
+R4(config-router)#neighbor 5.5.5.5 ebgp-multihop 5
+R4(configrouter)#end
+R4# 
+
+
+R5#configure terminal
+
+
+Enter configuration commands, one per line. End with CNTL/Z.
+R5(config)#
+R5(config)#router bgp 5
+R5(config-router)#
+R5(configrouter)#neighbor 3.3.3.3 remote-as 3
+R5(config-router)#neighbor 3.3.3.3 updatesource loopback 0
+R5(config-router)#neighbor 3.3.3.3 ebgp-multihop 2
+R5(configrouter)#
+R5(config-router)#neighbor 4.4.4.4 remote-as 4
+R5(config-router)#neighbor 4.4.4.4 update-source loopback 0
+R5(config-router)#neighbor 4.4.4.4 ebgp-multihop 2
+R5(config-router)#end
+R5#
+
+
+ Configuring Static routes for reachability of Loopback IP for making BGP neighbors Up, Because we are making BGP neighbors with the help of Loopback Ip. 
+
+R1(config)#ip route 3.3.3.3 255.255.255.255 fastEthernet 0/1
+R1(config)#
+R1(config)#ip route 2.2.2.2 255.255.255.255 fastEthernet 0/0
+R1(config)#*Mar 1 01:03:46.671: %BGP-5-ADJCHANGE: neighbor 2.2.2.2 Up
+R1(config)#*Mar 1 01:04:21.423: %BGP-5-ADJCHANGE: neighbor 3.3.3.3 Up 
+R2(config)#ip route 4.4.4.4 255.255.255.255 fastEthernet 0/1
+R2(config)#
+R2(config)#ip route 1.1.1.1 255.255.255.255 fastEthernet 0/0
+R2(config)#*Mar 1 01:03:46.895: %BGP-5-ADJCHANGE: neighbor 1.1.1.1 Up
+R2(config)#*Mar 1 01:04:34.423: %BGP-5-ADJCHANGE: neighbor 4.4.4.4 Up
+R2(config)# 
+R3(config)#ip route 1.1.1.1 255.255.255.255 fastEthernet 0/0
+R3(config)#
+R3(config)#ip route 5.5.5.5 255.255.255.255 fastEthernet 0/1
+R3(config)#*Mar 1 01:05:01.511: %BGP-5-ADJCHANGE: neighbor 1.1.1.1 Up
+R3(config)#
+R3(config)#*Mar 1 01:05:50.019: %BGP-5-ADJCHANGE: neighbor 5.5.5.5 Up 
+R4(config)#ip route 2.2.2.2 255.255.255.255 fastEthernet 0/0
+R4(config)#
+R4(config)#ip route 5.5.5.5 255.255.255.255 fastEthernet 0/1
+R4#*Mar 1 01:05:14.279: %BGP-5-ADJCHANGE: neighbor 2.2.2.2 Up 
+R4#*Mar 1 01:05:50.339: %BGP-5-ADJCHANGE: neighbor 5.5.5.5 Up
+R4# 
+
+
+R5(config)#ip route 4.4.4.4 255.255.255.255 fastEthernet 0/1
+R5(config)#
+R5(config)#ip route 3.3.3.3 255.255.255.255 fastEthernet 0/0
+R5#*Mar 1 00:52:49.575: %BGP-5-ADJCHANGE: neighbor 3.3.3.3 Up*Mar 1 00:52:49.915: %BGP-5- ADJCHANGE: neighbor 4.4.4.4 Up
+R5# 
+All BGP routers form their Neighborship. 
+
+
+R1#show ip bgp 
+
+
+summary | begin NeighborNeighbor V AS MsgRcvd MsgSent TblVer InQ OutQ Up/Down State/PfxRcd2.2.2.2 4 1 24 24 1 0 0 00:20:13 03.3.3.3 4 3 23 23 1 0 0 00:19:38 0 We are redistributing Connected interfaces into BGP in all routes. 
+
+
+R1#configure terminal
+R1(config)#router bgp 1
+R1(config-router)#redistribute co
+R1(config-router)#redistribute connectedR2(config)#router bgp 1
+R2(configrouter)#redistribute connected
+R3(config)#router bgp 3
+R3(configrouter)#redistribute connected
+R3(config-router)#
+R4(config)#router bgp 4
+R4(configrouter)#redistribute connected
+R5(config)#router bgp 5
+R5(configrouter)#redistribute connected
+R5(config-router)#end After redistributing Connected routes.
+ R1#show ip bgp 
+
+
+summary | begin NeighborNeighbor V AS MsgRcvd MsgSent TblVer InQ OutQ Up/Down 2.2.2.2 4 1 237 240 243 0 0 01:06:02 3.3.3.3 4 3 75 84 241 0 0 01:05:27 4/5 You can see that we can able to receive 7 prefixes via BGP through the 2.2.2.2 and 3.3.3.3 Neighbors.
+
+
+ R1#
+BGP routing table entry for 5.5.5.5/32, version 3Paths: (2 available, best #2, table Default-IP-Routing-Table) Advertised to update-groups: 2 from 2.2.2.2 (2.2.2.2) Origin incomplete, metric 0, , valid, internal 3 5 from 3.3.3.3 (3.3.3.3) Origin incomplete, , valid, external, 
+R1#
+R1#
+BGP routing table entry for 55.55.55.55/32, version 5Paths: (2 available, best #2, table Default-IP-RoutingTable) Advertised to update-groups: 2 from 2.2.2.2 (2.2.2.2) Origin incomplete, metric 0, , valid, internal 3 5 from 3.3.3.3 (3.3.3.3) Origin incomplete, , valid, external,
+
+
+ R1# 
+
+
+From the above output we can see that we can see that best-path is via 3.3.3.3(AS 3) to reach the destination 5.5.5.5 of 55.55.55.55. By default we have a local preference of 100 for all the routes.
+
+
+ R2#
+BGP routing table entry for 5.5.5.5/32, version 3Paths: (2 available, best #2, table Default-IP-Routing-Table) Advertised to update-groups: 1 from 1.1.1.1 (1.1.1.1) Origin incomplete, metric 0, localpref 100, valid, internal from 4.4.4.4 (4.4.4.4) Origin incomplete, localpref 100, valid, external, 
+R2#
+R2#
+R2#
+BGP routing table entry for 55.55.55.55/32, version 4Paths: (2 available, best #2, table Default-IP-Routing-Table) Advertised to update-groups: 1 from 1.1.1.1 (1.1.1.1) Origin incomplete, metric 0, , valid, internal from 4.4.4.4 (4.4.4.4) Origin incomplete, , valid, external, From the above output of R2, we can see that we can see that best-path is via 4.4.4.4(AS 4) to reach the destination 5.5.5.5 and 55.55.55.55. Configuring Local-Preference using Route-Map on R1. 
+
+
+
+
+R1#configure terminal
+Enter configuration commands, one per line. End with CNTL/Z.
+R1(config)#
+R1(config)#route-map permit 10
+R1(config-route-map)#
+R1(configroute-map)#set local-preference 
+R1(config-route-map)#match ip address 
+R1(configroute-map)#exit
+R1(config)# Now we have created route-map with the name LOCAL-PREFERENCE, we have match it with the access-list 1 (Match ip address is nothing but matching the Access-list), and if it matches that Access-list 1 , it will set the weight to 7500. 
+
+
+R1(config)#access-list 1 permit 5.5.5.5 0.0.0.0
+
+
+ BGP Configuration to apply route-map to neighbor: 
+
+
+R1(config)#router bgp 1
+
+
+R1(config-router)#
+R1(config-router)#end
+R1#
+R1#clear ip bgp * 
+soft Just clear the BGP sessions by using the above command. Don’t forget to use the soft command, or else it will the BGP TCP sessions and BGP will be re-established. You can now see the below output after clearing the BGP Sessions: 5/5 
+R1#BGP routing table entry for 5.5.5.5/32, version 470Paths: (1 available, best #1, table Default-IP-Routing-Table)Flag: 0x800 Advertised to update-groups: 2 3 5 from 3.3.3.3 (3.3.3.3) Origin incomplete, , valid, external, 
+R1#
+R1#
+BGP routing table entry for 55.55.55.55/32, version 471Paths: (1 available, best #1, table Default-IP-Routing-Table)Flag: 0x820 Advertised to update-groups: 1 4 5 from 2.2.2.2 (2.2.2.2) Origin incomplete, metric 0, , valid, internal, We observe that local preference value is changed for the network 5.5.5.5, but the local preference is same (100) for the network 55.55.55.55 Also note that for the network 55.55.55.55 best-path changed to 2.2.2.2. Because the networks that matches the Access-list 1 will be forwarded to 3.3.3.3 (AS 3). Other routes will be moves on to the other path.
+ R2#
+BGP routing table entry for 5.5.5.5/32, version 460Paths: (2 available, best #1, table Default-IP-Routing-Table) Advertised to update-groups: 2 3 5 from 1.1.1.1 (1.1.1.1) Origin incomplete, metric 0, , valid, internal, R2#BGP routing table entry for 55.55.55.55/32, version 4Paths: (1 available, best #1, table Default-IP-Routing-Table) Advertised to update-groups: 1 4 5 from 4.4.4.4 (4.4.4.4) Origin incomplete, , valid, external, R2#

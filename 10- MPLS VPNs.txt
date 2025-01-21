@@ -1,0 +1,336 @@
+﻿Practical 10- Implementing MPLS VPNs
+Here is the Topology on which we did the experiment 
+  
+
+Step 1: Router Config
+SP1
+SP1#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+SP1(config)#int Loopback 0
+SP1(config-if)#ip
+SP1(config-if)#ip address 10.0.1.1 255.255.255.0
+SP1(config-if)#no shut
+SP1(config-if)#ex
+SP1(config)#int fa 0/1
+SP1(config-if)#ip add 10.0.11.1 255.255.255.0
+SP1(config-if)#no shut
+SP1(config-if)#ex
+  
+
+SP2
+SP2#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+SP2(config)#int Loopback 0
+SP2(config-if)#ip address
+SP2(config-if)#ip address 10.0.2.1 255.255.255.0
+SP2(config-if)#no shut
+SP2(config-if)#ex
+SP2(config)#int fa1/0
+SP2(config-if)#ip add 10.0.12.2 255.255.255.0
+SP2(config-if)#no shut
+SP2(config-if)#ex
+  
+
+
+
+SP3
+SP3#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+SP3(config)#int Loopback 0
+SP3(config-if)#ip ad
+SP3(config-if)#ip add 10.0.3.1 255.255.255.0
+SP3(config-if)#no shut
+SP3(config-if)#ex
+SP3(config)#int fa 1/0
+SP3(config-if)#ip add 10.0.12.3 255.255.255.0
+SP3(config-if)#no shut
+SP3(config-if)#ex
+  
+
+
+
+HQ
+HQ#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+HQ(config)#int Loopback 0
+HQ(config-if)#ip add
+HQ(config-if)#ip add 192.168.1.1 255.255.255.0
+HQ(config-if)#no shut
+HQ(config-if)#ex
+HQ(config)#int fa0/0
+HQ(config-if)#ip add 192.168.100.2 255.255.255.0
+HQ(config-if)#no shut
+HQ(config-if)#ex
+  
+
+
+
+BRANCH
+BRANCH#conf t
+BRANCH(config)#int Loopback 0
+BRANCH(config-if)#ip add
+BRANCH(config-if)#ip add 192.168.2.1 255.255.255.0
+BRANCH(config-if)#no shut
+BRANCH(config-if)#ex
+BRANCH(config)#int fa0/0
+BRANCH(config-if)#ip add 192.168.200.2 255.255.255.0
+BRANCH(config-if)#no shut
+BRANCH(config-if)#ex
+
+
+
+
+  
+
+
+
+Step 2: Ospf Configuration 
+SP1
+SP1(config)#router ospf 1 
+SP1(config-if)#network 10.0.1.0 0.0.0.255 area 0 
+SP1(config-if)#network 10.0.11.0 0.0.0.255 area 0 
+SP1(config-if)#ex
+  
+
+
+
+SP2
+SP2(config)#router ospf 1 
+SP2(config-if)#network 10.0.2.0 0.0.0.255 area 0 
+SP2(config-if)#network 10.0.11.0 0.0.0.255 area 0 
+SP2(config-if)#network 10.0.12.0 0.0.0.255 area 0 
+SP2(config-if)#ex
+  
+
+
+
+SP3
+SP3(config)#router ospf 1 
+SP3(config-if)#network 10.0.3.0 0.0.0.255 area 0 
+SP3(config-if)#network 10.0.12.0 0.0.0.255 area 0 
+SP3(config-if)#ex
+  
+
+
+
+
+
+
+
+For Checking the config 
+SP2(config)#do show ip ospf neighbor 
+  
+
+
+
+Step 3: Do the MPLS config 
+SP1
+SP1(config)#mpls ldp 
+SP1(config-if)#mpls ldp router-id loopback 0 force 
+SP1(config)#int fa 0/1
+SP1(config-if)#mpls ip
+SP1(config-if)#no shut 
+SP1(config-if)#ex
+  
+
+
+
+SP2
+SP2(config)#mpls ldp router-id loopback 0
+SP2(config)#int fa 0/1
+SP2(config-if)#mpls ip
+SP2(config-if)#no shut
+SP2(config-if)#ex
+SP2(config)#mpls ldp router-id loopback 0
+SP2(config)#int fa 1/0
+SP2(config-if)#mpls ip
+SP2(config-if)#no shut
+SP2(config-if)#ex
+  
+
+
+
+SP3
+SP3(config)#mpls ldp router-id loopback 0 force
+SP3(config)#int fa 1/0
+SP3(config-if)#mpls ip
+SP3(config-if)#no shut
+SP3(config-if)#no shut
+SP3(config-if)#ex
+  
+
+
+
+SP2(config)#do sh mpls ldp neighbor 
+
+
+
+
+  
+
+
+
+Step 4: Config the vrf CUST-A 
+SP1
+SP1(config)#ip vrf CUST-A 
+SP1(config-vrf)#rd 100:1 
+SP1(config-vrf)#route-target export 1:100 
+SP1(config-vrf)#route-target import 1:100 
+SP1(config-vrf)#no shut 
+SP1(config-vrf )#ex
+  
+
+
+
+SP3
+SP3(config)#ip vrf CUST-A  
+SP3(config-vrf)#rd 100:1 
+SP3(config-vrf)#route-target export 1:100 
+SP3(config-vrf)#route-target import 1:100 
+SP3(config-vrf)#no shut 
+SP3(config-vrf )#ex 
+SP3(config)#int fa0/0 
+SP3(config-if)#ip vrf forwarding CUST-A 
+SP3(config-if)#ip address 192.168.200.1 255.255.255.0 
+SP3(config-if)#no shut SP3(config-if)#ex
+  
+
+
+
+For Checking the vrf
+SP1(config)#do ping vrf CUST-A 192.168.100.2 
+  
+
+
+
+Step 5: Customer routing
+HQ
+HQ(config)#router ospf 1 
+HQ(config-router)#log-adjacency-changes 
+HQ(config-router)#network 192.168.1.0 0.0.0.255 area 10 
+HQ(config-router)#network 192.168.100.0 0.0.0.255 area 10 
+HQ(config-router)#exit
+  
+
+
+
+BRANCH
+BRANCH(config)#router ospf 1 
+BRANCH(config-router)#log-adjacency-changes
+BRANCH(config-router)#network 192.168.2.0 0.0.0.255 area 10 
+BRANCH(config-router)#network 192.168.200.0 0.0.0.255 area 10 
+BRANCH(config-router)#exit
+  
+
+
+
+SP1
+SP1(config)#router ospf 10 VRF CUST-A 
+SP1config-router)#network 192.168.100.0 0.0.0.255 area 10 
+SP1(config-router)#exit
+  
+
+
+
+SP3
+SP3(config)#router ospf 10 VRF CUST-A 
+SP3(config-router)#network 192.168.200.0 0.0.0.255 area 10
+SP3(config-router)#exit
+  
+
+
+
+SP1(config)#do sh ip ospf neighbor
+  
+
+  
+
+
+
+Step 6: BGP
+SP1(config)#router bgp 100 
+SP1(config-router)#neighbor 10.0.3.1 remote-as 100 
+SP1(config-router)#neighbor 10.0.3.1 update-source Loopback 0 
+SP1(config-router)#exit 
+SP1(config-if)#do sh ip bgp summary 
+  
+
+
+
+SP3
+SP3(config)#router bgp 100 
+SP3(config-router)#neighbor 10.0.1.1 remote-as 100 
+SP3(config-router)#neighbor 10.0.1.1 update-source Loopback 0 
+SP3(config-router)#exit 
+SP3(config-if)#do sh ip bgp summary
+
+
+  
+
+
+
+SP1
+SP1(config)#router bgp 100 
+SP1(config-router)#address-family vpnv4 
+SP1(config-router)#neighbor 10.0.3.1 activate 
+SP1(config-router)#exit
+
+
+  
+
+
+
+SP1(config)#do sh ip bp summary 
+
+
+  
+
+
+
+SP3(config)#router bgp 100 
+SP3(config-router)#address-family vpnv4 
+SP3(config-router)#neighbor 10.0.1.1 activate 
+SP3(config-router)#exit
+  
+
+
+
+SP1
+SP1(config)#router ospf 10 vrf CUST-A 
+SP1(config-router)#redistribute bgp 100 subnets 
+SP1(config)#router bgp 100 
+SP1(config-router)#address-family vpnv4 vrf CUST-A 
+SP1(config-router)#redistribute ospf 10 vrf CUST-A 
+SP1(config-router)#exit 
+SP1(config-router)#exit-address-family 
+
+
+  
+
+
+
+
+
+SP3
+SP3(config)#router ospf 10 vrf CUST-A 
+SP3(config-router)#redistribute bgp 100 subnets 
+SP3(config)#router bgp 100 
+SP3(config-router)#address-family vpnv4 vrf CUST-A 
+SP3(config-router)#redistribute ospf 10 vrf CUST-A 
+SP3(config-router)#exit 
+SP3(config-router)#exit-address-family
+  
+
+
+
+SP3(config)#do sh ip bgp vpnv4 all  
+  
+
+
+
+SP1(config)#do sh ip route vrf CUST-A 
+  
+
+SP1(config)#do sh ip route 
+  
+________________
